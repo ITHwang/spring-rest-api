@@ -2,6 +2,7 @@ package me.taektaek.demoinflearnrestapi.events;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -32,7 +33,7 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
-        if (errors.hasErrors()) {
+        if (errors.hasErrors()) { //EventDto에 달아놓은 constraint에 맞지 않으면 error
             return ResponseEntity.badRequest().body(errors);
         }
 
@@ -42,9 +43,17 @@ public class EventController {
         }
 
         Event event = modelMapper.map(eventDto, Event.class);
-        event.update(); //free 필드값 초기화
+        event.update(); //free, offline 필드값 초기화
         Event newEvent = this.eventRepository.save(event);
-        URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
-        return ResponseEntity.created(createdUri).body(event);
+
+        WebMvcLinkBuilder selfLinkBuilder = linkTo(EventController.class).slash(newEvent.getId());
+        URI createdUri = selfLinkBuilder.toUri();
+
+        //refactoring: 링크 추가하는 로직은 resource 객체에 있는 것이 좋음
+        EventResource eventResource = new EventResource(event);
+        eventResource.add(linkTo(EventController.class).withRel("query-events"));
+        eventResource.add(selfLinkBuilder.withRel("update-event"));
+
+        return ResponseEntity.created(createdUri).body(eventResource);
     }
 }

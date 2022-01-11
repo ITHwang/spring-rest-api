@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EventTest {
 
     @Test
+    @DisplayName("builder() 테스트")
     public void builder() {
         Event event = Event.builder()
                 .name("Inflearn Spring REST API")
@@ -22,6 +23,7 @@ class EventTest {
     }
 
     @Test
+    @DisplayName("Event 빈 생성 테스트")
     public void javaBean() {
         //Given
         String name = "Event";

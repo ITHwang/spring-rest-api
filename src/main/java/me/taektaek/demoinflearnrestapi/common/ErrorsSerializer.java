@@ -8,7 +8,7 @@ import org.springframework.validation.Errors;
 
 import java.io.IOException;
 
-// Error 객체는 자자 빈 스펙을 맞추지 못하기 때문에 body()에 넣어서 serialize할 수 없다.
+// Error 객체는 자바 빈 스펙을 맞추지 못하기 때문에 body()에 넣어서 serialize할 수 없다.
 // 따라서 jackson이 제공하는 JsonSerializer를 통해 직접 구현
 @JsonComponent
 public class ErrorsSerializer extends JsonSerializer<Errors> {
