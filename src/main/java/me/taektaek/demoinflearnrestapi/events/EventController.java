@@ -1,5 +1,6 @@
 package me.taektaek.demoinflearnrestapi.events;
 
+import me.taektaek.demoinflearnrestapi.common.ErrorsResource;
 import org.modelmapper.ModelMapper;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
@@ -34,14 +35,9 @@ public class EventController {
 
     @PostMapping
     public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
-        if (errors.hasErrors()) { //EventDto에 달아놓은 constraint에 맞지 않으면 error
-            return ResponseEntity.badRequest().body(errors);
-        }
-
+        if (errors.hasErrors()) return badRequest(errors);
         eventValidator.validate(eventDto, errors);
-        if (errors.hasErrors()) {
-            return ResponseEntity.badRequest().body(errors);
-        }
+        if (errors.hasErrors()) return badRequest(errors);
 
         Event event = modelMapper.map(eventDto, Event.class);
         event.update(); //free, offline 필드값 초기화
@@ -57,5 +53,11 @@ public class EventController {
         eventResource.add(Link.of("/docs/index.html#resources-events-create", "profile"));
 
         return ResponseEntity.created(createdUri).body(eventResource);
+    }
+
+    //Resource wrapping for adding link to index
+    private ResponseEntity badRequest(Errors errors) {
+        ErrorsResource body = new ErrorsResource(errors);
+        return ResponseEntity.badRequest().body(body);
     }
 }
