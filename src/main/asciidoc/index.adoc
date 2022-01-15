@@ -6,8 +6,6 @@
 :toc: left
 :toclevels: 4
 :sectlinks:
-:operation-curl-request-title: Example request
-:operation-http-response-title: Example response
 
 [[overview]]
 = 개요
@@ -107,8 +105,7 @@
 
 `GET` 요청을 사용하여 서비스의 모든 이벤트를 조회할 수 있다.
 
-(I'm gonna make)
-//operation::get-events[snippets='response-fields,curl-request,http-response,links']
+operation::query-events[snippets='curl-request,http-request,response-headers,response-fields,http-response,links']
 
 [[resources-events-create]]
 === 이벤트 생성
