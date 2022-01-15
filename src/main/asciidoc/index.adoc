@@ -105,7 +105,8 @@
 
 `GET` 요청을 사용하여 서비스의 모든 이벤트를 조회할 수 있다.
 
-operation::query-events[snippets='curl-request,http-request,response-headers,response-fields,http-response,links']
+operation::query-events[snippets='curl-request,http-request,response-headers,response-fields,http-response']
+
 
 [[resources-events-create]]
 === 이벤트 생성

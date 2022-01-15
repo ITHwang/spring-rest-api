@@ -19,8 +19,7 @@ import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 import static org.springframework.restdocs.headers.HeaderDocumentation.*;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.linkWithRel;
-import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.links;
+import static org.springframework.restdocs.hypermedia.HypermediaDocumentation.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -217,32 +216,41 @@ public class EventControllerTests {
                                 headerWithName(HttpHeaders.CONTENT_TYPE).description("Content type")
                         ),
                         responseFields(
-                                fieldWithPath("_embedded.eventList[].id").description("Identifier of event")
-                                fieldWithPath("_embedded.eventList[].name").description("Name of new event"),
-                                fieldWithPath("_embedded.eventList[].description").description("description of new event"),
-                                fieldWithPath("_embedded.eventList[].beginEnrollmentDateTime").description("date time of begin of new event"),
-                                fieldWithPath("_embedded.eventList[].closeEnrollmentDateTime").description("date time of close of new event"),
-                                fieldWithPath("_embedded.eventList[].beginEventDateTime").description("date time of begin of new event"),
-                                fieldWithPath("_embedded.eventList[].endEventDateTime").description("date time of end of new event"),
-                                fieldWithPath("_embedded.eventList[].location").description("location of new event"),
-                                fieldWithPath("_embedded.eventList[].basePrice").description("base price of new event"),
-                                fieldWithPath("_embedded.eventList[].maxPrice").description("max price of new event"),
-                                fieldWithPath("_embedded.eventList[].limitOfEnrollment").description("limit of enrollment "),
+                                fieldWithPath("_embedded.eventList[].id").description("Identifier of event"),
+                                fieldWithPath("_embedded.eventList[].name").description("Name of event"),
+                                fieldWithPath("_embedded.eventList[].description").description("description of event"),
+                                fieldWithPath("_embedded.eventList[].beginEnrollmentDateTime").description("date time of begin of event"),
+                                fieldWithPath("_embedded.eventList[].closeEnrollmentDateTime").description("date time of close of event"),
+                                fieldWithPath("_embedded.eventList[].beginEventDateTime").description("date time of begin of event"),
+                                fieldWithPath("_embedded.eventList[].endEventDateTime").description("date time of end of event"),
+                                fieldWithPath("_embedded.eventList[].location").description("location of event"),
+                                fieldWithPath("_embedded.eventList[].basePrice").description("base price of event"),
+                                fieldWithPath("_embedded.eventList[].maxPrice").description("max price of event"),
+                                fieldWithPath("_embedded.eventList[].limitOfEnrollment").description("limit of enrollment"),
                                 fieldWithPath("_embedded.eventList[].offline").description("it tells is this event is offline event or not"),
                                 fieldWithPath("_embedded.eventList[].free").description("it tells is this event is free or not"),
                                 fieldWithPath("_embedded.eventList[].eventStatus").description("event status"),
-                                fieldWithPath("_embedded.eventList[]._links.self.href").description("link to self"),
-                                fieldWithPath("_links.query-events.href").description("link to query event list"),
-                                fieldWithPath("_links.update-event.href").description("link to update existing event"),
+                                fieldWithPath("_embedded.eventList[]_links.self.href").description("link to self"),
+                                fieldWithPath("page.size").description("elements per page"),
+                                fieldWithPath("page.totalElements").description("total elements"),
+                                fieldWithPath("page.totalPages").description("total pages"),
+                                fieldWithPath("page.number").description("page number that starts from zero"),
+                                fieldWithPath("_links.first.href").description("link to first page"),
+                                fieldWithPath("_links.prev.href").description("link to previous page"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.next.href").description("link to next page"),
+                                fieldWithPath("_links.last.href").description("link to last page"),
                                 fieldWithPath("_links.profile.href").description("link to profile")
-                        ),
-                        links(linkWithRel("first").description("link to first page"),
-                                linkWithRel("prev").description("link to previous page"),
-                                linkWithRel("self").description("link to self"),
-                                linkWithRel("next").description("link to next page"),
-                                linkWithRel("last").description("link to last page"),
-                                linkWithRel("profile").description("link to profile")
                         )
+//                        links(
+//                                halLinks(),
+//                                linkWithRel("first").description("link to first page"),
+//                                linkWithRel("prev").description("link to previous page"),
+//                                linkWithRel("self").description("link to self"),
+//                                linkWithRel("next").description("link to next page"),
+//                                linkWithRel("last").description("link to last page"),
+//                                linkWithRel("profile").description("link to profile")
+//                        )
                 ))
         ;
     }
