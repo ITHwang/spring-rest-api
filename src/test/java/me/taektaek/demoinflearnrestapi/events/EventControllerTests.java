@@ -199,7 +199,7 @@ public class EventControllerTests {
         //Given
         IntStream.range(0, 30).forEach(this::generateEvent);
 
-        //When
+        //When & Then
         this.mockMvc.perform(get("/api/events")
                         .param("page", "1")
                         .param("size", "10")
@@ -255,12 +255,60 @@ public class EventControllerTests {
         ;
     }
 
-    private void generateEvent(int index) {
+    @Test
+    @DisplayName("기존의 이벤트를 하나 조회하기")
+    public void getEvent() throws Exception {
+        //Given
+        Event event = this.generateEvent(100);
+
+        //When & Then
+        this.mockMvc.perform(get("/api/events/{id}", event.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").exists())
+                .andExpect(jsonPath("id").exists())
+                .andExpect(jsonPath("_links.self").exists())
+                .andExpect(jsonPath("_links.profile").exists())
+                .andDo(document("get-event",
+                        responseHeaders(
+                                headerWithName(HttpHeaders.CONTENT_TYPE).description("Content type")
+                        ),
+                        responseFields(
+                                fieldWithPath("id").description("Identifier of event"),
+                                fieldWithPath("name").description("Name of event"),
+                                fieldWithPath("description").description("description of event"),
+                                fieldWithPath("beginEnrollmentDateTime").description("date time of begin of event"),
+                                fieldWithPath("closeEnrollmentDateTime").description("date time of close of event"),
+                                fieldWithPath("beginEventDateTime").description("date time of begin of event"),
+                                fieldWithPath("endEventDateTime").description("date time of end of event"),
+                                fieldWithPath("location").description("location of event"),
+                                fieldWithPath("basePrice").description("base price of event"),
+                                fieldWithPath("maxPrice").description("max price of event"),
+                                fieldWithPath("limitOfEnrollment").description("limit of enrollment"),
+                                fieldWithPath("offline").description("it tells is this event is offline event or not"),
+                                fieldWithPath("free").description("it tells is this event is free or not"),
+                                fieldWithPath("eventStatus").description("event status"),
+                                fieldWithPath("_links.self.href").description("link to self"),
+                                fieldWithPath("_links.profile.href").description("link to profile")
+                        )
+                ))
+        ;
+    }
+
+    @Test
+    @DisplayName("없는 이벤트를 조회했을 때 404 응답 받기")
+    public void getEvent404() throws Exception {
+        this.mockMvc.perform(get("/api/events/999999999"))
+                .andExpect(status().isNotFound())
+        ;
+    }
+
+
+    private Event generateEvent(int index) {
         Event event = Event.builder()
                 .name("event " + index)
                 .description("test event")
                 .build();
-        this.eventRepository.save(event);
+        return this.eventRepository.save(event);
     }
 
 }
