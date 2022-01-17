@@ -5,6 +5,7 @@ import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -82,6 +84,32 @@ public class EventController {
         Event event = optionalEvent.get();
         EventResource eventResource = new EventResource(event);
         eventResource.add(Link.of("/docs/index.html#resources-events-get", "profile"));
+        return ResponseEntity.ok(eventResource);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateEvent(@PathVariable Integer id,
+                                      @RequestBody @Valid EventDto eventDto,
+                                      Errors errors) {
+
+        //수정하려는 이벤트가 없가면 404
+        Optional<Event> optionalEvent = this.eventRepository.findById(id);
+        if (optionalEvent.isEmpty()) return ResponseEntity.notFound().build();
+
+        //데이터 바인딩이 이상한 경우 400(비어있는 경우)
+        if (errors.hasErrors()) return badRequest(errors);
+
+        //데이터 바인딩이 비즈니스 로직에 맞지 않는 경우
+        this.eventValidator.validate(eventDto, errors);
+        if (errors.hasErrors()) return badRequest(errors);
+
+        //수정하기
+        Event existingEvent = optionalEvent.get();
+        this.modelMapper.map(eventDto, existingEvent);
+        this.eventRepository.save(existingEvent); //service와 @Transactional이 없으므로 직접 save()로 수정해줌
+
+        EventResource eventResource = new EventResource(existingEvent);
+        eventResource.add(Link.of("/docs/index.html#resources-events-update", "profile"));
         return ResponseEntity.ok(eventResource);
     }
 
