@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Set;
@@ -25,7 +24,7 @@ class AccountServiceTest {
     AccountService accountService;
 
     @Autowired
-    PasswordEncoder passwordEncoder;
+    AccountRepository accountRepository;
 
     @Test
     @DisplayName("인증 테스트")
@@ -38,14 +37,14 @@ class AccountServiceTest {
                 .password(password)
                 .roles(Set.of(AccountRole.ADMIN, AccountRole.USER))
                 .build();
-        accountService.saveAccount(account);
+        accountRepository.save(account);
 
         //When
         UserDetailsService userDetailsService = (UserDetailsService) accountService;
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 
         //Then
-        assertThat(this.passwordEncoder.matches(password, userDetails.getPassword())).isTrue();
+        assertThat(userDetails.getPassword()).isEqualTo(password);
     }
 
     @Test
@@ -55,5 +54,7 @@ class AccountServiceTest {
         Exception exception = assertThrows(UsernameNotFoundException.class, () -> accountService.loadUserByUsername(username));
         assertThat(exception).hasMessageContaining(username);
     }
+
+
 
 }

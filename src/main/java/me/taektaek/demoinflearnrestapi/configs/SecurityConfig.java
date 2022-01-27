@@ -5,18 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-
-import java.awt.image.IndexColorModel;
 
 //https://github.com/jgrandja/spring-security-oauth-2-4-migrate/blob/main/auth-server/src/main/java/org/springframework/security/oauth/samples/config/SecurityConfig.java
 
@@ -32,17 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    //deprecated
-//    @Bean
-//    public TokenStore tokenStore() {
-//        return new InMemoryTokenStore();
-//    }
-
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+    //TokenStore was deprecated.
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -50,23 +35,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(passwordEncoder);
     }
 
-    //security로 들어오기전에 필터링되어 로그를 많이 남기지 않음.
     @Override
     public void configure(WebSecurity web) throws Exception {
         web.ignoring().mvcMatchers("/docs/index.html");
         web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+
     }
 
+//    걸러지지 않고 security 안으로 들어와 더 많은 로그를 내며 필터링됨.
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.authorizeRequests()
+//                .mvcMatchers("/docs/index.html").anonymous()
+//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).anonymous()
+//        ;
+//    }
+
+    @Bean
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .anonymous()
-                    .and()
-                .formLogin()
-                    .and()
-                .authorizeRequests()
-                    .mvcMatchers(HttpMethod.GET, "/api/**").anonymous()
-                    .anyRequest().authenticated()
-        ;
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 }
